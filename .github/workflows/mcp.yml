@@ -1,29 +1,27 @@
-name: MCP API checks
+name: TechSpace CI
 
 on:
   push:
-    paths:
-      - 'src/app/api/mcp/**'
-      - 'src/lib/mcp/**'
-      - 'docs/MCP.md'
-      - '.github/workflows/mcp.yml'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  web-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build --if-present
-      - name: Lint
-        run: npm run lint --if-present
-      - name: Smoke test (discovery)
-        run: |
-          echo 'Running minimal smoke test against Next.js route via node (JS fetch)'
-          node -e "(async()=>{const res=await fetch('http://localhost:3000/api/mcp/discovery').catch(()=>null); if(res){console.log('server reachable');}else{console.log('server not reachable in CI - ensure deployment step');}})()"
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test -- --run
+      - run: npm run build
