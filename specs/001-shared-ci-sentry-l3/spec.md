@@ -56,6 +56,12 @@ query strings") against the first scrubber copy, then passed 5/5 with the allowl
 `onRequestError`), `src/instrumentation-client.ts`. No `withSentryConfig`, no source-map upload, no auth token in the build.
 `package.json` `test` is now `vitest run` (CI-safe).
 
+Security scan findings fixed (first shared-CI run, 2026-10-23): `@modelcontextprotocol/sdk` 1.26.0 → 1.32.1
+(GHSA-22jm-h49p-29qw and four more; `mcp-handler` 1.1.0 pins the SDK to exactly 1.26.0, so an `overrides` entry forces
+1.32.1 — verified against the built server with `initialize`, `tools/list` (7 tools) and `tools/call get_stack`);
+vitest 1 → 4.1.12 (vite, tinypool, esbuild, @vitest/mocker); `postcss` ≥ 8.5.28 (next pins 8.4.31); `ip-address`
+10.7.4. `osv-scanner.toml` ignores braces GHSA-vfj7-8cjw-p6xm (no fixed release, dev-only) until 2027-01-31.
+
 ## 5. Docs truth check
 
 PRODUCT.md now states: the web grid shows the 6 MDX write-ups, while the MCP tools read the 12 entries in
