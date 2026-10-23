@@ -42,12 +42,13 @@ Public repo, so both jobs use the default GitHub-hosted `ubuntu-24.04` runner. P
 | AC-02 | With a DSN: errors only (no PII, tracing, trace headers, breadcrumbs, transactions) | `src/lib/sentry.test.ts` "reports errors only…" |
 | AC-03 | `request`, `user`, `breadcrumbs`, `extra` and stack-frame locals are removed | `src/lib/sentry.test.ts` scrubEvent cases |
 | AC-04 | `contexts.nextjs.request_path` (added by `captureRequestError`) is dropped, only platform contexts kept; query strings are stripped from `transaction` and tags, `tags.url` removed | `src/lib/sentry.test.ts` "drops the request path…" |
+| AC-04b | `?query` and `#hash` are stripped from URLs in exception messages, frame `filename`/`abs_path` and `debug_meta` images | `src/lib/sentry.test.ts` "strips query strings from URLs…" |
 | AC-05 | Existing behaviour unchanged (MCP tools, controllers, client, rate limiter) | 4 existing test files, 19 tests |
 | AC-06 | PRODUCT.md matches the card claims review row `techspace` and the code | review (section 5) |
 
 Red first: 2026-10-22 the new test failed with `Failed to load url ./sentry` (no module). 2026-10-23 the hardened test
 (shared reference after a security review) failed 1/5 ("drops the request path that captureRequestError adds and strips
-query strings") against the first scrubber copy, then passed 5/5 with the allowlist version. Full suite: 5 files, 24 tests green.
+query strings") against the first scrubber copy, then passed 5/5 with the allowlist version. A second review added "strips query strings from URLs in the exception message, frames and debug images": red 1/6 against the allowlist copy, green 6/6 after the update. Full suite: 5 files, 24 tests green.
 
 ## 4. Interfaces
 

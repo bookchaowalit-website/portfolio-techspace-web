@@ -49,6 +49,23 @@ describe("scrubEvent", () => {
     expect(JSON.stringify(event)).not.toContain("private");
   });
 
+  it("strips query strings from URLs in the exception message, frames and debug images", () => {
+    const event = scrubEvent({
+      exception: {
+        values: [{
+          value: "Failed to fetch https://example.com/api?token=secret (from /page?q=private#frag)",
+          stacktrace: { frames: [{ filename: "https://example.com/app.js?v=private", abs_path: "/page?q=private" }] },
+        }],
+      },
+      debug_meta: { images: [{ code_file: "https://example.com/chunk.js?private=1" }] },
+    });
+    const value = event.exception?.values?.[0];
+    expect(value?.value).toBe("Failed to fetch https://example.com/api (from /page)");
+    expect(value?.stacktrace?.frames?.[0]).toEqual({ filename: "https://example.com/app.js", abs_path: "/page" });
+    expect(event.debug_meta?.images?.[0]?.code_file).toBe("https://example.com/chunk.js");
+    expect(JSON.stringify(event)).not.toContain("private");
+  });
+
   it("removes local variables from stack frames", () => {
     const event = scrubEvent({
       exception: { values: [{ stacktrace: { frames: [{ function: "f", vars: { password: "p" } }] } }] },
