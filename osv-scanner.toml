@@ -1,0 +1,7 @@
+# braces <= 3.0.3 has no fixed release (GHSA-vfj7-8cjw-p6xm, stack exhaustion on deeply nested
+# patterns). It is a dev-only dependency (eslint-config-next > fast-glob > micromatch > braces),
+# never shipped to the browser and never fed user input. Re-check when a fix ships.
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+ignoreUntil = 2027-01-31
+reason = "braces (dev-only build tooling) has no fixed release; not reachable from user input"
