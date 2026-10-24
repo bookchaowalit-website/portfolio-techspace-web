@@ -64,3 +64,9 @@ Sentry events are scrubbed by `src/lib/sentry.ts` (no request, user, breadcrumbs
 | 4 | Sentry receives errors from production | not verified: the live build (D9a patch deploy, 2026-10-23) predates this change; later changes wait for D9 |
 | 5 | Baselines captured | waived — dated action: capture after the PostHog key exists (D4) and the next deploy (D9), by 2026-11-30 |
 | 6 | Consent | not needed for Sentry error-only reporting; needed before PostHog events ship (D4) |
+
+## Review (2026-10-24): changes requested
+
+Checker: independent Claude reviewer subagent (`solo:solo-reviewer`, Sonnet, read-only, no maker context). Status unchanged until fixed.
+
+- Gap: KPI-G-01 (Sentry errors / page views) has no page-view source (Vercel Analytics unverified, PostHog not live) and the row does not mark the denominator as planned.
