@@ -1,7 +1,27 @@
-# braces <= 3.0.3 has no fixed release (GHSA-vfj7-8cjw-p6xm, stack exhaustion on deeply nested
-# patterns). It is a dev-only dependency (eslint-config-next > fast-glob > micromatch > braces),
-# never shipped to the browser and never fed user input. Re-check when a fix ships.
+# Reviewed OSV-Scanner exceptions. Each entry needs a reason and an expiry.
+
 [[IgnoredVulns]]
 id = "GHSA-vfj7-8cjw-p6xm"
-ignoreUntil = 2027-01-31
-reason = "braces (dev-only build tooling) has no fixed release; not reachable from user input"
+ignoreUntil = 2027-01-17T00:00:00Z
+reason = """braces <=3.0.3 stack exhaustion on deeply nested brace patterns. No fixed release exists \
+(3.0.3 is the latest). Dev-only: eslint-config-next -> @next/eslint-plugin-next -> fast-glob -> \
+micromatch -> braces, run at lint time on glob patterns from this repository's own config, never on \
+request input, and not part of the Next.js runtime bundle. Re-check when braces or fast-glob ships a fix."""
+
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+ignoreUntil = 2027-01-04T00:00:00Z
+reason = """minimatch <11.0.1 globparts amplification DoS. No fix in the 3.x or 10.x lines, and the \
+latest eslint, @eslint/* and typescript-eslint releases still require minimatch ^3 / ^10. Dev-only: \
+lint tooling run on glob patterns from this repository's own config, never on request input, and not \
+part of the runtime bundle. The @sentry/bundler-plugins path is fixed by the glob 14 override. \
+Re-check when eslint or typescript-eslint moves to minimatch 11."""
+
+[[IgnoredVulns]]
+id = "GHSA-fc5q-39xc-vjpf"
+ignoreUntil = 2027-01-18T00:00:00Z
+reason = """picomatch <=4.0.7 ReDoS through single-branch repeated extglobs. No fixed release exists \
+(4.0.7 is the latest). Build and test tooling only: @sentry/nextjs -> @rollup/plugin-commonjs, vite, \
+vitest, tinyglobby (eslint/typescript-eslint) and micromatch, all matching glob patterns from this \
+repository's own config at build, lint or test time, never request input, and not part of the \
+Next.js runtime bundle. Re-check when picomatch ships a fix."""

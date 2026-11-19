@@ -1,17 +1,13 @@
-import { getAllTechStacks } from '@/lib/mdx';
-import { mdxToTechStack } from '@/types/mdx-tech-stack';
-import { TechStackClientPage } from '@/components/tech-stack-client-page';
+import { HomeView } from "@/components/stack-views";
+import { getAllTechStacks } from "@/lib/mdx";
 
-export default async function Home() {
-  try {
-    // Get MDX tech stacks and convert them to the expected format
-    const mdxTechStacks = getAllTechStacks();
-    const techStacks = mdxTechStacks.map(mdxToTechStack);
+type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? "";
 
-    return <TechStackClientPage techStacks={techStacks} />;
-  } catch (error) {
-    console.error('Error loading tech stacks:', error);
-    // Return empty state or error state
-    return <TechStackClientPage techStacks={[]} />;
-  }
+export default async function Home({ searchParams }: Props) {
+  const params = await searchParams;
+  const stacks = getAllTechStacks();
+  // Only a category the content really has becomes the filter; anything else shows everything.
+  const category = one(params.category);
+  return <HomeView stacks={stacks} query={one(params.q).trim().slice(0, 80)} category={stacks.some((stack) => stack.category === category) ? category : ""} />;
 }

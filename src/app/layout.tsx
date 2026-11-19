@@ -1,135 +1,42 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
-import { ErrorBoundary } from "@/components/error-boundary";
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// Font variables sit on <html>: the Reader shell tokens live on :root and read them from there.
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const DESCRIPTION = "A catalogue of the tools Bookchaowalit uses, each with a short MDX write-up, plus an MCP endpoint over the catalogue.";
 
 export const metadata: Metadata = {
-  title: "Techspace - Bookchaowalit",
-  description: "Techspace by Bookchaowalit - A modern web application built with Next.js",
-  keywords: ['Techspace', 'Bookchaowalit', 'Next.js', 'React', 'TypeScript'],
-  authors: [{ name: 'Bookchaowalit', url: 'https://bookchaowalit.com' }],
-  creator: 'Bookchaowalit',
-  publisher: 'Bookchaowalit',
-  metadataBase: new URL('https://bookchaowalit.com'),
-  alternates: {
-    canonical: 'https://bookchaowalit.com',
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://bookchaowalit.com',
-    title: 'Techspace - Bookchaowalit',
-    description: 'Techspace by Bookchaowalit - A modern web application built with Next.js',
-    siteName: 'Techspace',
-    images: [
-      {
-        url: '/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Techspace',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Techspace - Bookchaowalit',
-    description: 'Techspace by Bookchaowalit - A modern web application built with Next.js',
-    images: ['/og-image.svg'],
-    creator: '@bookchaowalit',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+  title: "Tech Space | Tools I use, and why | Bookchaowalit",
+  description: DESCRIPTION,
+  authors: [{ name: "Bookchaowalit", url: "https://bookchaowalit.com" }],
+  creator: "Bookchaowalit",
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
+  openGraph: { type: "website", locale: "en_US", url: "/", title: "Tech Space | Tools I use, and why", description: DESCRIPTION, siteName: "Tech Space", images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Tech Space" }] },
+  twitter: { card: "summary_large_image", title: "Tech Space | Tools I use, and why", description: DESCRIPTION, images: ["/og-image.svg"] },
+  robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Tech Space",
+  url: SITE_URL,
+  description: DESCRIPTION,
+  author: { "@type": "Person", name: "Bookchaowalit", url: "https://bookchaowalit.com" },
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-  {/* THESIS: Techspace is an evidence-backed working reference, not a badge wall. OWN-WORLD: a ruled paper catalogue with a fixed centre rail turns each tool into a documented entry. STORY: scan the index, narrow the register, open the field note. FIRST VIEWPORT: establish the reference promise and expose the search/filter rail immediately. FORM: seed a1ed5691 / assigned centre-rail reference-setting direction, used as the composition spine and annotation margin. FINISH: warm paper, red/blue editorial marks, strict hairlines, and source-aware notes instead of scores-as-status. */}
-  {/* Structured Data for SEO */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebApplication',
-        name: 'Techspace',
-        url: 'https://bookchaowalit-techspace.vercel.app',
-        description: 'Techspace by Bookchaowalit - A modern web application',
-        applicationCategory: 'UtilitiesApplication',
-        operatingSystem: 'Web',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD'
-        },
-        author: {
-          '@type': 'Person',
-          name: 'Bookchaowalit',
-          url: 'https://bookchaowalit.com'
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Bookchaowalit',
-          url: 'https://bookchaowalit.com'
-        }
-      })
-    }}
-  />
-
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'Techspace',
-        url: 'https://bookchaowalit-techspace.vercel.app',
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: 'https://bookchaowalit-techspace.vercel.app/more-projects',
-          'query-input': 'required name=search_term'
-        }
-      })
-    }}
-  />
-
-
-        <ErrorBoundary>
-          <Analytics />
-        <SpeedInsights />
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         {children}
-        </ErrorBoundary>
       </body>
     </html>
   );
 }
-
-// SEO TODO: Add Open Graph tags for social sharing

@@ -1,12 +1,12 @@
 # TechSpace
 
-A personal tech-stack catalog: a card grid of every tool/framework I've
-actually used (React, Next.js, TypeScript, Rust, Databricks, Roboflow, ...),
+A personal tech-stack catalog on the shared Reader shell (`READER.md`): a
+searchable, category-filterable list of tools (React, Next.js, TypeScript, Rust, Databricks, Roboflow, ...),
 each with a real MDX write-up under `content/stacks/<category>/<slug>.mdx` —
 what it's for, why I picked it, what I'd use it for next. Not a "here's my
 skills" badge wall; each entry is a short case for the tool.
 
-Live: https://bookchaowalit-techspace-frontend.vercel.app
+Live: https://techspace.bookchaowalit.com
 Mobile companion: [bookchaowalit-techspace-mobile](https://github.com/bookchaowalit-mobile/bookchaowalit-techspace-mobile)
 Portfolio: [bookchaowalit.com](https://bookchaowalit.com)
 
@@ -14,9 +14,9 @@ Portfolio: [bookchaowalit.com](https://bookchaowalit.com)
 
 | Route | What it is |
 |---|---|
-| `/` | Stack grid, filterable by category |
+| `/` | Tool list: search (`?q=`) and category chips (`?category=`) |
 | `/stack/[slug]` | One stack's MDX write-up (statically generated) |
-| `/more-projects` | Cross-links to sibling projects |
+| `/more-projects` | 308 to https://bookchaowalit.com/ |
 | `/api/mcp` | Real MCP server (JSON-RPC / Streamable HTTP) — 7 tools, see below |
 | `/api/mcp/discovery`, `/schema`, `/data/stacks`, `/health` | Plain REST-style companions to the MCP tools, for clients that don't speak MCP |
 
@@ -97,7 +97,7 @@ vitest for the MCP layer's tests.
 ## Local development
 
 ```bash
-npm install --legacy-peer-deps  # vitest 1 vs @vercel/analytics' transitive Vite 8 peer conflict
+npm install
 npm run dev
 npm run test        # vitest, MCP layer only by default via test:mcp
 npm run build
