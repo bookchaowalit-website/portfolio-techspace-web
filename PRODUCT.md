@@ -63,3 +63,9 @@ It is a working-use catalog with case notes, not a badge wall or an unqualified 
 - The Vercel project is linked to the old repository name and is deployed by CLI only; pushes to `main` do not deploy.
   The Next.js 15.5.28 / sharp 0.35.5 security patch was deployed on 2026-10-23 (D9a). Later changes on `main`,
   including Sentry, reach the live site only after the owner reconnects Vercel Git (owner action D9).
+
+## Known limits
+
+- `scripts/deploy-smoke.sh` checks the home page before it waits for the build marker, so right after a deploy the
+  home check can run against the previous deployment while the alias is still moving (the shared smoke template does
+  the same; batched with that template).

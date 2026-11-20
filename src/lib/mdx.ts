@@ -10,6 +10,14 @@ if (!fs.existsSync(contentDirectory)) {
   fs.mkdirSync(contentDirectory, { recursive: true });
 }
 
+/** YAML reads an unquoted `dateAdded: 2024-12-01` as a Date; the shell's formatDate() slices text, so keep it a
+ * YYYY-MM-DD string (an invalid date becomes "", which the page shows as no date). */
+export function normalizeFrontmatter(data: Record<string, unknown>): MDXTechStackFrontmatter {
+  const value = data.dateAdded;
+  if (!(value instanceof Date)) return data as unknown as MDXTechStackFrontmatter;
+  return { ...data, dateAdded: Number.isNaN(value.getTime()) ? "" : value.toISOString().slice(0, 10) } as unknown as MDXTechStackFrontmatter;
+}
+
 export function getAllTechStackSlugs(): string[] {
   try {
     if (!fs.existsSync(contentDirectory)) {
@@ -71,7 +79,7 @@ export function getTechStackBySlug(slug: string): MDXTechStack | null {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { data, content } = matter(fileContents);
 
-    const frontmatter = data as MDXTechStackFrontmatter;
+    const frontmatter = normalizeFrontmatter(data);
 
     // Calculate reading time (rough estimate)
     const wordsPerMinute = 200;
