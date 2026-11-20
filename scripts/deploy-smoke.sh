@@ -7,7 +7,7 @@
 # 3. MAIN_ROUTE answers 200 and shows MAIN_MARKER.
 set -euo pipefail
 
-HOME_MARKER="Techspace"
+HOME_MARKER="Tech Space"
 HEALTH_PATH="/api/health"
 MAIN_ROUTE="/stack/nextjs"
 MAIN_MARKER="Next.js"

@@ -69,6 +69,14 @@ describe("tool page", () => {
     expect(generateStaticParams()).toHaveLength(getAllTechStacks().length);
     expect((await generateMetadata(slug("rust"))).title).toBe("Rust | Tech Space");
     expect(await generateMetadata(slug("cobol"))).toEqual({});
+    const meta = await generateMetadata(slug("react"));
+    const og = meta.openGraph as { url?: string; title?: string; description?: string; images?: unknown[] };
+    expect(meta.alternates?.canonical).toBe("/stack/react");
+    expect(og.url).toBe("/stack/react");
+    expect(og.title).toBe("React | Tech Space");
+    expect(og.description).toBe(meta.description);
+    expect(og.images).toHaveLength(1);
+    expect((meta.twitter as { title?: string }).title).toBe("React | Tech Space");
   });
 });
 
@@ -92,5 +100,16 @@ describe("helpers", () => {
     expect(logoFor({ imageUrl: "/icons/placeholder.svg" })).toBeUndefined();
     expect(logoFor({})).toBeUndefined();
     expect(stripLeadingTitle("# Title\n\nBody")).toBe("\nBody");
+  });
+});
+
+describe("deploy smoke markers", () => {
+  it("the home and main-route markers in scripts/deploy-smoke.sh appear in the rendered pages", async () => {
+    const { readFileSync } = await import("node:fs");
+    const script = readFileSync("scripts/deploy-smoke.sh", "utf8");
+    const marker = (name: string) => script.match(new RegExp(`^${name}="([^"]+)"`, "m"))![1];
+    const route = marker("MAIN_ROUTE").replace("/stack/", "");
+    expect(renderToStaticMarkup(await Home(search()))).toContain(marker("HOME_MARKER"));
+    expect(renderToStaticMarkup(await StackPage(slug(route)))).toContain(marker("MAIN_MARKER"));
   });
 });

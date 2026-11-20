@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SITE_URL } from "@/lib/site";
+import { OG_IMAGE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 // Font variables sit on <html>: the Reader shell tokens live on :root and read them from there.
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   creator: "Bookchaowalit",
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
-  openGraph: { type: "website", locale: "en_US", url: "/", title: "Tech Space | Tools I use, and why", description: DESCRIPTION, siteName: "Tech Space", images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Tech Space" }] },
+  openGraph: { type: "website", locale: "en_US", url: "/", title: "Tech Space | Tools I use, and why", description: DESCRIPTION, siteName: "Tech Space", images: [OG_IMAGE] },
   twitter: { card: "summary_large_image", title: "Tech Space | Tools I use, and why", description: DESCRIPTION, images: ["/og-image.svg"] },
   robots: { index: true, follow: true },
 };
