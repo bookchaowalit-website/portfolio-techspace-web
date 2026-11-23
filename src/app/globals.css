@@ -2,7 +2,6 @@
 @import "./reader-shell.css";
 
 html, body { margin: 0; background: var(--rs-bg); }
-html { scroll-padding-top: 64px; }
 
 /* Tool page: the logo (when the entry has a real one), the official-site link and my note. */
 .ts-links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin: 0 0 20px; }
