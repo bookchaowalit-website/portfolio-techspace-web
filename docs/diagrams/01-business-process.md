@@ -12,19 +12,20 @@ flowchart LR
   HOME --> MDX["read content/stacks/**/*.mdx via gray-matter (6 files)"]
   MDX --> GRID["grid filtered by query and a category the content really has"]
   GRID --> DETAIL["/stack/slug: statically generated MDX write-up"]
-  AGENT["MCP or REST client"] --> RL{"rateLimitGuard: 60 per 60 s per bearer or IP, in memory"}
+  AGENT["MCP client"] --> RL{"/api/mcp only: rateLimitGuard, default 60 per 60 s (env-tunable) per bearer or IP, in memory"}
   RL -->|over limit| R429["429 Too Many Requests + Retry-After"]
   RL -->|ok| AUTH{"MCP_API_TOKEN set?"}
-  AUTH -->|"no (live endpoint is public)"| TOOLS
+  AUTH -->|"no: bearer not required by the code"| TOOLS
   AUTH -->|"yes, token matches"| TOOLS["7 tools: roll_dice, list_stacks, get_stack, search_stacks, site_summary, page_summary, render_stack_markdown"]
   AUTH -->|"yes, missing or wrong"| R401["rejected by withMcpAuth"]
   TOOLS --> TS["src/data/tech-stacks.ts (12 entries)"]
   TOOLS --> PS["page_summary reads an MDX file by path"]
-  AGENT --> REST["GET /api/mcp/discovery, schema, data/stacks, health (authGuard, CORS)"]
-  REST --> TS
-  CI["CI + security"] --> PUSH["push to main"]
-  PUSH -.-> VERCEL["Vercel deployment [ต้องยืนยัน]"]
-  VERCEL --> SMOKE["deploy-smoke.yml: GET / and /api/health commit marker"]
+  REST["REST client"] --> AG["discovery, schema, data/stacks: authGuard + CORS, no rate limit"]
+  AG --> TS
+  REST --> HEALTH["/api/mcp/health: public, status and uptime only"]
+  PUSH["push or PR"] --> CI["CI + security workflows"]
+  PUSH -.-> VERCEL["Vercel Git integration deploy, not gated by CI [ต้องยืนยัน]"]
+  VERCEL --> SMOKE["deploy-smoke.yml on a successful Production deployment: GET /, then /api/health commit marker, then /stack/nextjs"]
 ```
 
 Sources: `src/app/page.tsx`, `src/lib/mdx.ts`, `src/app/stack/[slug]/page.tsx`, `src/app/api/mcp/route.ts`, `src/lib/mcp/tools.ts`, `src/lib/mcp/rateLimiter.ts`, `src/lib/mcp/controllers.ts`, `src/app/api/mcp/discovery/route.ts`, `src/app/api/mcp/data/stacks/route.ts`, `src/app/api/health/route.ts`, `.github/workflows/deploy-smoke.yml`, `scripts/deploy-smoke.sh`, `PRODUCT.md`
@@ -32,9 +33,10 @@ Sources: `src/app/page.tsx`, `src/lib/mdx.ts`, `src/app/stack/[slug]/page.tsx`, 
 ข้อเท็จจริงจากโค้ด:
 
 - หน้าเว็บอ่านบันทึกจากไฟล์ MDX (6 รายการ) แต่ MCP และ REST อ่านจาก `src/data/tech-stacks.ts` (12 รายการ) สองพื้นผิวจึงแสดงแค็ตตาล็อกไม่ตรงกัน (ตรงกับที่ `PRODUCT.md` ระบุ)
-- rate limiter เก็บใน memory ของ instance เดียว (Map); ผลบน Vercel หลาย instance [ต้องยืนยัน]
+- production ตั้ง `MCP_API_TOKEN` หรือไม่ [ต้องยืนยัน]: `PRODUCT.md` ผลตรวจ 2026-10-22 ว่า endpoint เปิดสาธารณะ ส่วนโค้ดไม่บังคับ bearer เมื่อไม่ได้ตั้ง token
+- rate limiter (เฉพาะ `/api/mcp`) เก็บใน memory ของ instance เดียว (Map); ผลบน Vercel หลาย instance [ต้องยืนยัน]
 - `PRODUCT.md` (2026-10-22/23) ว่า Git link ของ Vercel ชี้ repo เก่าและ push ไม่ deploy แต่ workflow `deploy-smoke.yml` ถูกออกแบบให้รันเมื่อ Vercel Git deploy สำเร็จ; สถานะวันนี้ [ต้องยืนยัน]
-- ไม่มี product analytics; Sentry (errors only) เมื่อมี DSN ตั้งบน Vercel จริงหรือไม่ [ต้องยืนยัน]
+- ไม่มี product analytics; Sentry (errors only) เมื่อมี DSN (`beforeSend` ลบ request, user, breadcrumbs, extra, ตัด query/hash ใน URL และข้อความ error, ไม่ส่ง performance transaction) ตั้งบน Vercel จริงหรือไม่ [ต้องยืนยัน]
 
 ## To-Be (docs/measurement/KPI-PLAN.md และ PRODUCT.md)
 
@@ -46,7 +48,7 @@ flowchart LR
   TOOLS --> ONE["one catalog: same entries as the web page"]
   GRID --> ONE
   V --> PH["PostHog free tier: write-up reach, filter use (KPI-PLAN)"]
-  AGENT --> PH
+  AGENT -.->|"server handler of tools/call only, fields tool and ok (KPI-L-02)"| PH
   PUSH["push to main"] --> DEPLOY["Vercel Git deploy (owner action D9)"]
 ```
 
